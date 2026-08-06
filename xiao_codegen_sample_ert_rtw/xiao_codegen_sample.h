@@ -6,9 +6,9 @@
  *
  * Code generated for Simulink model 'xiao_codegen_sample'.
  *
- * Model version                  : 1.3
+ * Model version                  : 1.5
  * Simulink Coder version         : 25.2 (R2025b) 28-Jul-2025
- * C/C++ source code generated on : Wed Jul 22 13:52:40 2026
+ * C/C++ source code generated on : Thu Aug  6 14:18:11 2026
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: ARM Compatible->ARM Cortex-M
@@ -35,6 +35,11 @@
 #define rtmSetErrorStatus(rtm, val)    ((rtm)->errorStatus = (val))
 #endif
 
+/* Block states (default storage) for system '<Root>' */
+typedef struct {
+  int32_T clockTickCounter;            /* '<Root>/Pulse Generator' */
+} DW_xiao_codegen_sample_T;
+
 /* External outputs (root outports fed by signals with default storage) */
 typedef struct {
   real_T Out1;                         /* '<Root>/Out1' */
@@ -44,6 +49,9 @@ typedef struct {
 struct tag_RTM_xiao_codegen_sample_T {
   const char_T * volatile errorStatus;
 };
+
+/* Block states (default storage) */
+extern DW_xiao_codegen_sample_T xiao_codegen_sample_DW;
 
 /* External outputs (root outports fed by signals with default storage) */
 extern ExtY_xiao_codegen_sample_T xiao_codegen_sample_Y;
@@ -55,6 +63,12 @@ extern void xiao_codegen_sample_terminate(void);
 
 /* Real-time Model object */
 extern RT_MODEL_xiao_codegen_sample_T *const xiao_codegen_sample_M;
+
+/*-
+ * These blocks were eliminated from the model due to optimizations:
+ *
+ * Block '<Root>/Scope' : Unused code path elimination
+ */
 
 /*-
  * The generated code includes comments that allow you to trace directly

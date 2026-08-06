@@ -6,9 +6,9 @@
  *
  * Code generated for Simulink model 'xiao_codegen_sample'.
  *
- * Model version                  : 1.3
+ * Model version                  : 1.5
  * Simulink Coder version         : 25.2 (R2025b) 28-Jul-2025
- * C/C++ source code generated on : Wed Jul 22 13:52:40 2026
+ * C/C++ source code generated on : Thu Aug  6 14:18:11 2026
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: ARM Compatible->ARM Cortex-M
@@ -17,6 +17,10 @@
  */
 
 #include "xiao_codegen_sample.h"
+#include "rtwtypes.h"
+
+/* Block states (default storage) */
+DW_xiao_codegen_sample_T xiao_codegen_sample_DW;
 
 /* External outputs (root outports fed by signals with default storage) */
 ExtY_xiao_codegen_sample_T xiao_codegen_sample_Y;
@@ -29,16 +33,24 @@ RT_MODEL_xiao_codegen_sample_T *const xiao_codegen_sample_M =
 /* Model step function */
 void xiao_codegen_sample_step(void)
 {
-  /* (no output/update code required) */
+  /* Outport: '<Root>/Out1' incorporates:
+   *  DiscretePulseGenerator: '<Root>/Pulse Generator'
+   */
+  xiao_codegen_sample_Y.Out1 = ((xiao_codegen_sample_DW.clockTickCounter < 10) &&
+    (xiao_codegen_sample_DW.clockTickCounter >= 0));
+
+  /* DiscretePulseGenerator: '<Root>/Pulse Generator' */
+  if (xiao_codegen_sample_DW.clockTickCounter >= 19) {
+    xiao_codegen_sample_DW.clockTickCounter = 0;
+  } else {
+    xiao_codegen_sample_DW.clockTickCounter++;
+  }
 }
 
 /* Model initialize function */
 void xiao_codegen_sample_initialize(void)
 {
-  /* ConstCode for Outport: '<Root>/Out1' incorporates:
-   *  Constant: '<Root>/Constant'
-   */
-  xiao_codegen_sample_Y.Out1 = 0.0;
+  /* (no initialization code required) */
 }
 
 /* Model terminate function */

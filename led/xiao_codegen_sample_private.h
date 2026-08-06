@@ -6,9 +6,9 @@
  *
  * Code generated for Simulink model 'xiao_codegen_sample'.
  *
- * Model version                  : 1.3
+ * Model version                  : 1.5
  * Simulink Coder version         : 25.2 (R2025b) 28-Jul-2025
- * C/C++ source code generated on : Wed Jul 22 13:52:40 2026
+ * C/C++ source code generated on : Thu Aug  6 14:18:11 2026
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: ARM Compatible->ARM Cortex-M

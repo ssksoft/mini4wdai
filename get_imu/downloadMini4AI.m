@@ -120,72 +120,60 @@ ay = zeros(imuCount,1);
 az = zeros(imuCount,1);
 
 %% Download
-
 disp("Downloading log ...")
+
+tic
 
 h = waitbar(0,"Downloading...");
 
 for seq = 0:(imuCount-1)
 
-    %% Build command
-
-    cmd = zeros(1,3,'uint8');
-
-    cmd(1) = CMD_LOG_GET;
-    cmd(2) = bitand(seq,255);
-    cmd(3) = bitshift(seq,-8);
-
-    %% Send request
+    cmd = uint8([ ...
+        2 ...
+        bitand(seq,255) ...
+        bitshift(seq,-8) ]);
 
     write(cmdChar,cmd,"uint8");
 
-    pause(0.005)
-
+    % pause削除
     pkt = read(bulkChar);
 
     if length(pkt) < 19
-        warning("Invalid packet %d",seq)
         continue
     end
 
     idx = seq + 1;
 
-    %% Decode
-
     timeUs(idx) = ...
         double(typecast(uint8(pkt(4:7)),'uint32'));
 
     gx(idx) = ...
-        double(typecast(uint8(pkt(8:9)),'int16')) ...
-        / 10.0;
+        double(typecast(uint8(pkt(8:9)),'int16'))/10;
 
     gy(idx) = ...
-        double(typecast(uint8(pkt(10:11)),'int16')) ...
-        / 10.0;
+        double(typecast(uint8(pkt(10:11)),'int16'))/10;
 
     gz(idx) = ...
-        double(typecast(uint8(pkt(12:13)),'int16')) ...
-        / 10.0;
+        double(typecast(uint8(pkt(12:13)),'int16'))/10;
 
     ax(idx) = ...
-        double(typecast(uint8(pkt(14:15)),'int16')) ...
-        / 1000.0;
+        double(typecast(uint8(pkt(14:15)),'int16'))/1000;
 
     ay(idx) = ...
-        double(typecast(uint8(pkt(16:17)),'int16')) ...
-        / 1000.0;
+        double(typecast(uint8(pkt(16:17)),'int16'))/1000;
 
     az(idx) = ...
-        double(typecast(uint8(pkt(18:19)),'int16')) ...
-        / 1000.0;
+        double(typecast(uint8(pkt(18:19)),'int16'))/1000;
 
-    if mod(seq,20)==0
+    if mod(seq,500)==0
         waitbar(seq/imuCount,h)
     end
 
 end
 
 close(h)
+
+fprintf("Download Time = %.1f sec\n",toc);
 
 %% Table
 

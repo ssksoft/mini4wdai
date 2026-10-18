@@ -23,7 +23,7 @@ void loop() {
   // put your main code here, to run repeatedly:
   // xiao_codegen_sample_step();
   // digitalWrite(LED_BUILTIN, xiao_codegen_sample_Y.Out1);
-  analogWrite(PWM_PIN, DUTY_100);
+  analogWrite(PWM_PIN, DUTY_50);
   delay(100);
 }
 

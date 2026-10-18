@@ -351,8 +351,8 @@ static void onCommandWritten(BLEDevice central, BLECharacteristic characteristic
       if (!isLogging && imuCount > 0) {
         // Optional bytes 1..2 specify the first sequence; default is zero.
         streamSequence = (length >= 3) ? readU16LE(&buffer[1]) : 0;
-        dumpActive = true;
-        streamActive = true;
+        dumpActive = true;      // 確実にtrueにする
+        streamActive = true;    // 確実にtrueにする
         setStatus(STATUS_DUMPING);
       }
       break;

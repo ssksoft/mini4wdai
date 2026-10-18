@@ -27,7 +27,7 @@ end
 % Metadata is still requested once.
 write(cmdChar,uint8(1),"uint8");
 pause(0.25);
-meta = uint8(read(bulkChar,'oldest'));
+meta = uint8(read(bulkChar));
 if numel(meta) < 16 || leU16(meta,1) ~= hex2dec('FFFE')
     error("Metadata packet was not received.");
 end

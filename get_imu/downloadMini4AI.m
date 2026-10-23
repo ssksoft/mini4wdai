@@ -5,13 +5,17 @@ clear;
 global MINI4AI_RX
 MINI4AI_RX = struct('packets',{{}},'done',false,'lastSeq',-1,'duplicates',0);
 
+% 接続先情報
 SERVICE_UUID = "12345678-1234-5678-1234-56789abcdef0";
 CMD_UUID     = "12345678-1234-5678-1234-56789abcdef4";
 STATUS_UUID  = "12345678-1234-5678-1234-56789abcdef5";
 BULK_UUID    = "12345678-1234-5678-1234-56789abcdefc";
 
+% デバイス名「Mini4AI-IMU」を検索して接続
 fprintf("Connecting...\n");
 b = ble("Mini4AI-IMU");
+
+% 通信用の窓口オブジェクト取得
 cmdChar    = characteristic(b,SERVICE_UUID,CMD_UUID);
 statusChar = characteristic(b,SERVICE_UUID,STATUS_UUID);
 bulkChar   = characteristic(b,SERVICE_UUID,BULK_UUID);
@@ -24,16 +28,21 @@ elseif status == 0
     error("MG24 reported ERROR.");
 end
 
-% Metadata is still requested once.
+% メタデータのチェック
 write(cmdChar,uint8(1),"uint8");
 pause(0.25);
 meta = uint8(read(bulkChar));
 if numel(meta) < 16 || leU16(meta,1) ~= hex2dec('FFFE')
     error("Metadata packet was not received.");
 end
+
+// IMUデータのサイズ（metaデータの4byte目）を取得
 imuCount = double(leU16(meta,4));
+// IMUデータのオーバーフロー回数（metaデータの6byte目）を取得
 overflowCount = double(leU16(meta,6));
+// IMUデータのサンプル周期（metaデータの13byte目）を取得
 sampleHz = double(leU32(meta,13));
+// プロトコルバージョン（metaデータの10byte目）を取得
 protocolVersion = double(meta(10));
 fprintf("Samples=%d, Overflow=%d, Rate=%d Hz, Protocol=%d\n", ...
     imuCount,overflowCount,sampleHz,protocolVersion);
@@ -41,78 +50,40 @@ if protocolVersion < 2
     error("MG24 is not running the streaming firmware (protocol version 2).");
 end
 
-% % Subscribe BEFORE starting the stream. MATLAB's callback reads the oldest
-% % queued notification so packets are not intentionally flushed.
-% subscribe(bulkChar,"notification");
-% bulkChar.DataAvailableFcn = @mini4aiOnData;
-% cleanupObj = onCleanup(@()mini4aiCleanup(bulkChar)); %#ok<NASGU>
-% 
-% MINI4AI_RX.packets = cell(imuCount,1);
-% MINI4AI_RX.done = false;
-% MINI4AI_RX.lastSeq = -1;
-% MINI4AI_RX.duplicates = 0;
-% 
-% 
-% pause(0.5);
-% 
-% fprintf("Streaming log...\n");
-% t0 = tic;
-% write(cmdChar,uint8([6 0 0]),"uint8");
-% 
-% % Guard against an endless wait. This does not determine transfer speed.
-% timeoutSec = 180;
-% lastPrint = tic;
-% while ~MINI4AI_RX.done && toc(t0) < timeoutSec
-%     pause(0.02);
-%     drawnow limitrate;
-%     if toc(lastPrint) >= 1
-%         received = sum(~cellfun('isempty',MINI4AI_RX.packets));
-%         fprintf("Received %d / %d\n",received,imuCount);
-%         lastPrint = tic;
-%     end
-% end
-% elapsed = toc(t0);
-% 
-% bulkChar.DataAvailableFcn = [];
-% unsubscribe(bulkChar);
-% 
-% receivedMask = ~cellfun('isempty',MINI4AI_RX.packets);
-% receivedCount = sum(receivedMask);
-% fprintf("Received %d / %d in %.1f s\n",receivedCount,imuCount,elapsed);
-% if ~MINI4AI_RX.done
-%     warning("Terminator was not received before timeout.");
-% end
-% if receivedCount ~= imuCount
-%     missing = find(~receivedMask)-1;
-%     error("Missing %d packets. First missing sequence: %d. Reduce STREAM_BURST in MG24 firmware.", ...
-%         numel(missing),missing(1));
-% end
 
 fprintf("Downloading logs (legacy mode)...\n");
 timeUs = zeros(imuCount,1);
 gx = zeros(imuCount,1); gy = zeros(imuCount,1); gz = zeros(imuCount,1);
 ax = zeros(imuCount,1); ay = zeros(imuCount,1); az = zeros(imuCount,1);
 
+% BLEでデータ取得
 t0 = tic;
 for k = 1:imuCount
+    % k-1番目のデータを取得
     seq = k - 1;
-    % CMD_LOG_GET (2) + sequence (2bytes LE)
+    % CMD_LOG_SGET(=2)コマンドを実行,要求したいデータの番号の16bitのうち下位8bitを取得,要求したいデータの番号の16bitのうち上位8bitを取得
     cmdPacket = [2, uint8(mod(seq, 256)), uint8(floor(seq / 256))];
+
+    % BLEコマンド送信
     write(cmdChar, uint8(cmdPacket), "uint8");
     
+    % 受信データをpに格納（1パケット19byte）
     p = uint8(read(bulkChar));
     if numel(p) < 19
         error("Failed to read packet at sequence %d", seq);
     end
     
     timeUs(k) = double(leU32(p,4));
+    % 精度：0.1
     gx(k) = double(leI16(p,8))/10;
     gy(k) = double(leI16(p,10))/10;
     gz(k) = double(leI16(p,12))/10;
+    % 精度：0.001
     ax(k) = double(leI16(p,14))/1000;
     ay(k) = double(leI16(p,16))/1000;
     az(k) = double(leI16(p,18))/1000;
     
+    % カウントが50の倍数になったときにステータス表示
     if mod(k, 50) == 0
         fprintf("Downloaded %d / %d\n", k, imuCount);
     end
@@ -120,28 +91,14 @@ end
 elapsed = toc(t0);
 fprintf("Completed in %.1f s\n", elapsed);
 
-% % Decode after reception, not inside the callback.
-% timeUs = zeros(imuCount,1);
-% gx = zeros(imuCount,1); gy = zeros(imuCount,1); gz = zeros(imuCount,1);
-% ax = zeros(imuCount,1); ay = zeros(imuCount,1); az = zeros(imuCount,1);
-% for k = 1:imuCount
-%     p = MINI4AI_RX.packets{k};
-%     timeUs(k) = double(leU32(p,4));
-%     gx(k) = double(leI16(p,8))/10;
-%     gy(k) = double(leI16(p,10))/10;
-%     gz(k) = double(leI16(p,12))/10;
-%     ax(k) = double(leI16(p,14))/1000;
-%     ay(k) = double(leI16(p,16))/1000;
-%     az(k) = double(leI16(p,18))/1000;
-% end
-
-
+% 受信したIMUデータをcsvファイルとして出力
 T = table(timeUs/1e6,gx,gy,gz,ax,ay,az, ...
     'VariableNames',{'time_s','gx_dps','gy_dps','gz_dps','ax_g','ay_g','az_g'});
 filename = "Mini4AI_" + string(datetime('now','Format','yyyyMMdd_HHmmss')) + ".csv";
 writetable(T,filename);
 fprintf("Saved: %s\n",filename);
 
+% 受信したIMUデータ可視化
 figure;
 subplot(2,1,1); plot(T.time_s,[T.gx_dps T.gy_dps T.gz_dps]);
 grid on; xlabel("Time [s]"); ylabel("Gyro [dps]"); legend("gx","gy","gz");

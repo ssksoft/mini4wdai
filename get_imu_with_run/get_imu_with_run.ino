@@ -371,123 +371,142 @@ static void onCommandWritten(BLEDevice central, BLECharacteristic characteristic
 }
 
 // ============================================================
-// Setup / loop
+// Initialization
 // ============================================================
-void setup() {
-  // IMU用pin設定
+static void initLed() {
   pinMode(LED_BUILTIN, OUTPUT);
   ledSet(false);
+}
 
-  // IMU電源供給ON
+// IMU電源供給ON → I2C通信開始
+static bool initImu() {
   pinMode(IMU_EN_PIN, OUTPUT);
   digitalWrite(IMU_EN_PIN, HIGH);
   delay(30);
 
-  // IMU用I2C通信開始
   Wire.begin();
   imuReady = (myIMU.begin() == 0);
-  if (!imuReady) {
-    setStatus(STATUS_ERROR);
-    return;
-  }
+  if (!imuReady) return false;
   delay(80);
+  return true;
+}
 
-  // BLE使用開始
-  bool bleOk = BLE.begin();
-  if (!bleOk) {
-    delay(100);
-    bleOk = BLE.begin();
-  }
-  if (!bleOk) {
-    setStatus(STATUS_ERROR);
-    return;
-  }
+// BLE使用開始（失敗時は1回だけリトライ）
+static bool beginBle() {
+  if (BLE.begin()) return true;
+  delay(100);
+  return BLE.begin();
+}
 
-  bleReady = true;
-
-  // デバイス名の設定
+// IMUサービスと各窓口（コマンド受信・状態通知・bulk転送）を登録
+static void registerImuService() {
   BLE.setLocalName("Mini4AI-IMU");
   BLE.setDeviceName("Mini4AI-IMU");
 
-  // 外部からのコマンド受信用スタック追加
   imuService.addCharacteristic(commandChar);
-
-  // 外部からの状態通知受信用スタック追加
   imuService.addCharacteristic(statusChar);
-  
-  // センサーデータのbulk（一括）転送用
   imuService.addCharacteristic(bulkChar);
-
-  // BLEにIMUサービス登録
   BLE.addService(imuService);
-
-  // 接続待受サービスとして登録
   BLE.setAdvertisedService(imuService);
+}
 
-  // 外部からコマンドが送信されてきたときにonCommandWrittenを実行
+// コマンド受信・接続・切断時のコールバックを登録
+static void registerBleHandlers() {
   commandChar.setEventHandler(BLEWritten, onCommandWritten);
-
-  // 外部デバイスと正常接続時にonConnectedを実行
   BLE.setEventHandler(BLEConnected, onConnected);
-
-  // 外部デバイスとの接続が切断されたときにonDisconnectedを実行
   BLE.setEventHandler(BLEDisconnected, onDisconnected);
+}
 
-  // コマンド送受信用領域を初期化
+// コマンド送受信用領域を初期化
+static void initCharacteristicValues() {
   commandChar.writeValue((uint8_t)0);
   statusChar.writeValue(STATUS_LOGGING);
   uint8_t emptyBulk[3] = {0xFF, 0xFF, 0};
-  bulkChar.writeValue(emptyBulk, sizeof(emptyBulk))
+  bulkChar.writeValue(emptyBulk, sizeof(emptyBulk));
+}
+
+static bool initBle() {
+  if (!beginBle()) return false;
+  bleReady = true;
+
+  registerImuService();
+  registerBleHandlers();
+  initCharacteristicValues();
 
   // BLE電波発信開始
   BLE.advertise();
   lastBlePollMs = millis();
-  startLogging();
+  return true;
+}
 
-  // 走行用
+static void initMotor() {
   pinMode(PWM_PIN, OUTPUT);
   digitalWrite(PWM_PIN, LOW);
   analogWrite(PWM_PIN, 0);
-  
+}
+
+// ============================================================
+// Periodic tasks
+// ============================================================
+// 非同期IMUロギング（周期：SAMPLE_INTERVAL_US[μs]）
+static void serviceImuSampling() {
+  uint32_t nowUs = micros();
+  if (!isLogging || (uint32_t)(nowUs - lastSampleUs) < SAMPLE_INTERVAL_US) return;
+
+  // 大きく遅延した場合は追いつこうとせず基準時刻をリセット
+  uint32_t lagUs = (uint32_t)(nowUs - lastSampleUs);
+  lastSampleUs = (lagUs > SAMPLE_INTERVAL_US * 10UL)
+                     ? nowUs
+                     : lastSampleUs + SAMPLE_INTERVAL_US;
+  sampleImu(nowUs);
+}
+
+// 非同期BLE通信（周期：BLE_POLL_INTERVAL_MS[ms]）
+static void serviceBle() {
+  uint32_t nowMs = millis();
+  if (!bleReady || (uint32_t)(nowMs - lastBlePollMs) < BLE_POLL_INTERVAL_MS) return;
+  lastBlePollMs = nowMs;
+
+  BLE.poll();
+  // BLE接続中かつ未送信のダンプメタデータがあればsendDumpMetaで送信
+  if (bleConnected && dumpMetaPending) sendDumpMeta();
+  serviceStream();
+}
+
+static void updateStatusLed() {
+  uint32_t nowMs = millis();
+  switch (statusValue) {
+    case STATUS_LOGGING:    ledSet((nowMs / 100) % 2 == 0); break; // ロギング中：100ms周期
+    case STATUS_DUMPING:    ledSet((nowMs / 250) % 2 == 0); break; // データ転送中：250ms周期
+    case STATUS_DUMP_READY: ledSet((nowMs / 600) % 2 == 0); break; // 転送準備完了：600ms周期
+    default:                ledSet(true); break;
+  }
+}
+
+// ロギング中のみ走行、ログ終了時は走行停止
+static void updateMotor() {
+  analogWrite(PWM_PIN, isLogging ? DUTY_50 : 0);
+}
+
+// ============================================================
+// Setup / loop
+// ============================================================
+void setup() {
+  initLed();
+  if (!initImu() || !initBle()) {
+    setStatus(STATUS_ERROR);
+    return;
+  }
+  startLogging();
+  initMotor();
+
   // 電源投入から3秒後に走行開始
   delay(3000);
 }
 
 void loop() {
-  // 非同期IMUロギング（周期：SAMPLE_INTERVAL_US[μs]）
-  uint32_t nowUs = micros();
-  if (isLogging && (uint32_t)(nowUs - lastSampleUs) >= SAMPLE_INTERVAL_US) {
-    uint32_t lagUs = (uint32_t)(nowUs - lastSampleUs);
-    lastSampleUs = (lagUs > SAMPLE_INTERVAL_US * 10UL)
-                       ? nowUs
-                       : lastSampleUs + SAMPLE_INTERVAL_US;
-    sampleImu(nowUs);
-  }
-  // 非同期BLE通信（周期：BLE_POLL_INTERVAL_MS[ms]）
-  uint32_t nowMs = millis();
-  if (bleReady && (uint32_t)(nowMs - lastBlePollMs) >= BLE_POLL_INTERVAL_MS) {
-    lastBlePollMs = nowMs;
-    // BLE処理実行
-    BLE.poll();
-
-    // BLE接続中かつ未送信のダンプメタデータがあればsendDumpMetaで送信
-    if (bleConnected && dumpMetaPending) sendDumpMeta();
-    serviceStream();
-  }
-
-  if (statusValue == STATUS_LOGGING)
-    ledSet((millis() / 100) % 2 == 0); // ロギング中：100ms周期でLED点滅
-  else if (statusValue == STATUS_DUMPING)
-    ledSet((millis() / 250) % 2 == 0); // データ転送中：250ms周期でLED点滅
-  else if (statusValue == STATUS_DUMP_READY)
-    ledSet((millis() / 600) % 2 == 0); // 転送準備完了：600ms周期でLED点滅
-  else
-    ledSet(true);
-
-  // 走行
-  if (isLogging) {
-    analogWrite(PWM_PIN, DUTY_50);
-  } else {
-    analogWrite(PWM_PIN, 0); // ログ終了時は走行停止
-  }
+  serviceImuSampling();
+  serviceBle();
+  updateStatusLed();
+  updateMotor();
 }

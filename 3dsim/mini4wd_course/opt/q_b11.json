@@ -1,0 +1,127 @@
+{
+ "name": "b11_ac",
+ "slow": 0.25,
+ "timeout": 12,
+ "trials": [
+  {
+   "mass": 0.09,
+   "vmax": 8.8,
+   "v_over": 2.7,
+   "v_bridge": 2.8,
+   "a_coast": 6,
+   "tag": "m_vo2.7_vb2.8_ac6_p0",
+   "dy": 0.0,
+   "dyaw": 0.0
+  },
+  {
+   "mass": 0.09,
+   "vmax": 8.8,
+   "v_over": 2.7,
+   "v_bridge": 2.8,
+   "a_coast": 6,
+   "tag": "m_vo2.7_vb2.8_ac6_p1",
+   "dy": 0.1,
+   "dyaw": 0.2
+  },
+  {
+   "mass": 0.09,
+   "vmax": 8.8,
+   "v_over": 2.7,
+   "v_bridge": 2.8,
+   "a_coast": 6,
+   "tag": "m_vo2.7_vb2.8_ac6_p2",
+   "dy": -0.1,
+   "dyaw": -0.2
+  },
+  {
+   "mass": 0.09,
+   "vmax": 8.8,
+   "v_over": 2.7,
+   "v_bridge": 2.8,
+   "a_coast": 8,
+   "tag": "m_vo2.7_vb2.8_ac8_p0",
+   "dy": 0.0,
+   "dyaw": 0.0
+  },
+  {
+   "mass": 0.09,
+   "vmax": 8.8,
+   "v_over": 2.7,
+   "v_bridge": 2.8,
+   "a_coast": 8,
+   "tag": "m_vo2.7_vb2.8_ac8_p1",
+   "dy": 0.1,
+   "dyaw": 0.2
+  },
+  {
+   "mass": 0.09,
+   "vmax": 8.8,
+   "v_over": 2.7,
+   "v_bridge": 2.8,
+   "a_coast": 8,
+   "tag": "m_vo2.7_vb2.8_ac8_p2",
+   "dy": -0.1,
+   "dyaw": -0.2
+  },
+  {
+   "mass": 0.09,
+   "vmax": 8.8,
+   "v_over": 2.8,
+   "v_bridge": 2.9,
+   "a_coast": 6,
+   "tag": "m_vo2.8_vb2.9_ac6_p0",
+   "dy": 0.0,
+   "dyaw": 0.0
+  },
+  {
+   "mass": 0.09,
+   "vmax": 8.8,
+   "v_over": 2.8,
+   "v_bridge": 2.9,
+   "a_coast": 6,
+   "tag": "m_vo2.8_vb2.9_ac6_p1",
+   "dy": 0.1,
+   "dyaw": 0.2
+  },
+  {
+   "mass": 0.09,
+   "vmax": 8.8,
+   "v_over": 2.8,
+   "v_bridge": 2.9,
+   "a_coast": 6,
+   "tag": "m_vo2.8_vb2.9_ac6_p2",
+   "dy": -0.1,
+   "dyaw": -0.2
+  },
+  {
+   "mass": 0.09,
+   "vmax": 8.8,
+   "v_over": 2.7,
+   "v_bridge": 3.0,
+   "a_coast": 6,
+   "tag": "m_vo2.7_vb3.0_ac6_p0",
+   "dy": 0.0,
+   "dyaw": 0.0
+  },
+  {
+   "mass": 0.09,
+   "vmax": 8.8,
+   "v_over": 2.7,
+   "v_bridge": 3.0,
+   "a_coast": 6,
+   "tag": "m_vo2.7_vb3.0_ac6_p1",
+   "dy": 0.1,
+   "dyaw": 0.2
+  },
+  {
+   "mass": 0.09,
+   "vmax": 8.8,
+   "v_over": 2.7,
+   "v_bridge": 3.0,
+   "a_coast": 6,
+   "tag": "m_vo2.7_vb3.0_ac6_p2",
+   "dy": -0.1,
+   "dyaw": -0.2
+  }
+ ]
+}

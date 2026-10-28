@@ -1,0 +1,190 @@
+{
+ "name": "b12_ref",
+ "slow": 0.25,
+ "timeout": 12,
+ "trials": [
+  {
+   "mass": 0.09,
+   "vmax": 8.8,
+   "v_over": 2.7,
+   "v_bridge": 2.8,
+   "a_coast": 5.0,
+   "tag": "n_ac5.0_p0",
+   "dy": 0.0,
+   "dyaw": 0.0
+  },
+  {
+   "mass": 0.09,
+   "vmax": 8.8,
+   "v_over": 2.7,
+   "v_bridge": 2.8,
+   "a_coast": 5.0,
+   "tag": "n_ac5.0_p1",
+   "dy": 0.1,
+   "dyaw": 0.2
+  },
+  {
+   "mass": 0.09,
+   "vmax": 8.8,
+   "v_over": 2.7,
+   "v_bridge": 2.8,
+   "a_coast": 5.0,
+   "tag": "n_ac5.0_p2",
+   "dy": -0.1,
+   "dyaw": -0.2
+  },
+  {
+   "mass": 0.09,
+   "vmax": 8.8,
+   "v_over": 2.7,
+   "v_bridge": 2.8,
+   "a_coast": 5.5,
+   "tag": "n_ac5.5_p0",
+   "dy": 0.0,
+   "dyaw": 0.0
+  },
+  {
+   "mass": 0.09,
+   "vmax": 8.8,
+   "v_over": 2.7,
+   "v_bridge": 2.8,
+   "a_coast": 5.5,
+   "tag": "n_ac5.5_p1",
+   "dy": 0.1,
+   "dyaw": 0.2
+  },
+  {
+   "mass": 0.09,
+   "vmax": 8.8,
+   "v_over": 2.7,
+   "v_bridge": 2.8,
+   "a_coast": 5.5,
+   "tag": "n_ac5.5_p2",
+   "dy": -0.1,
+   "dyaw": -0.2
+  },
+  {
+   "mass": 0.09,
+   "vmax": 8.8,
+   "v_over": 2.7,
+   "v_bridge": 2.8,
+   "a_coast": 4.5,
+   "kp_bridge": 12,
+   "tag": "n_ac4.5_kb12_p0",
+   "dy": 0.0,
+   "dyaw": 0.0
+  },
+  {
+   "mass": 0.09,
+   "vmax": 8.8,
+   "v_over": 2.7,
+   "v_bridge": 2.8,
+   "a_coast": 4.5,
+   "kp_bridge": 12,
+   "tag": "n_ac4.5_kb12_p1",
+   "dy": 0.1,
+   "dyaw": 0.2
+  },
+  {
+   "mass": 0.09,
+   "vmax": 8.8,
+   "v_over": 2.7,
+   "v_bridge": 2.8,
+   "a_coast": 4.5,
+   "kp_bridge": 12,
+   "tag": "n_ac4.5_kb12_p2",
+   "dy": -0.1,
+   "dyaw": -0.2
+  },
+  {
+   "mass": 0.12,
+   "vmax": 8.8,
+   "v_over": 2.7,
+   "v_bridge": 2.8,
+   "a_coast": 4.5,
+   "tag": "n_ac4.5_m120_p0",
+   "dy": 0.0,
+   "dyaw": 0.0
+  },
+  {
+   "mass": 0.12,
+   "vmax": 8.8,
+   "v_over": 2.7,
+   "v_bridge": 2.8,
+   "a_coast": 4.5,
+   "tag": "n_ac4.5_m120_p1",
+   "dy": 0.1,
+   "dyaw": 0.2
+  },
+  {
+   "mass": 0.12,
+   "vmax": 8.8,
+   "v_over": 2.7,
+   "v_bridge": 2.8,
+   "a_coast": 4.5,
+   "tag": "n_ac4.5_m120_p2",
+   "dy": -0.1,
+   "dyaw": -0.2
+  },
+  {
+   "mass": 0.09,
+   "vmax": 7.0,
+   "v_over": 2.7,
+   "v_bridge": 2.8,
+   "a_coast": 4.5,
+   "tag": "n_ac4.5_v7_p0",
+   "dy": 0.0,
+   "dyaw": 0.0
+  },
+  {
+   "mass": 0.09,
+   "vmax": 7.0,
+   "v_over": 2.7,
+   "v_bridge": 2.8,
+   "a_coast": 4.5,
+   "tag": "n_ac4.5_v7_p1",
+   "dy": 0.1,
+   "dyaw": 0.2
+  },
+  {
+   "mass": 0.09,
+   "vmax": 7.0,
+   "v_over": 2.7,
+   "v_bridge": 2.8,
+   "a_coast": 4.5,
+   "tag": "n_ac4.5_v7_p2",
+   "dy": -0.1,
+   "dyaw": -0.2
+  },
+  {
+   "mass": 0.09,
+   "vmax": 8.8,
+   "v_over": 2.6,
+   "v_bridge": 2.7,
+   "a_coast": 4.5,
+   "tag": "n_ac4.5_vo2.6_p0",
+   "dy": 0.0,
+   "dyaw": 0.0
+  },
+  {
+   "mass": 0.09,
+   "vmax": 8.8,
+   "v_over": 2.6,
+   "v_bridge": 2.7,
+   "a_coast": 4.5,
+   "tag": "n_ac4.5_vo2.6_p1",
+   "dy": 0.1,
+   "dyaw": 0.2
+  },
+  {
+   "mass": 0.09,
+   "vmax": 8.8,
+   "v_over": 2.6,
+   "v_bridge": 2.7,
+   "a_coast": 4.5,
+   "tag": "n_ac4.5_vo2.6_p2",
+   "dy": -0.1,
+   "dyaw": -0.2
+  }
+ ]
+}

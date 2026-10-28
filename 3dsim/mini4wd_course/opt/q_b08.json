@@ -1,0 +1,115 @@
+{
+ "name": "b08_plan",
+ "slow": 0.25,
+ "timeout": 12,
+ "trials": [
+  {
+   "mass": 0.09,
+   "vmax": 8.8,
+   "v_over": 2.5,
+   "a_coast": 2.5,
+   "tag": "h_vo2.5_ac2.5_p0",
+   "dy": 0.0,
+   "dyaw": 0.0
+  },
+  {
+   "mass": 0.09,
+   "vmax": 8.8,
+   "v_over": 2.5,
+   "a_coast": 2.5,
+   "tag": "h_vo2.5_ac2.5_p1",
+   "dy": 0.1,
+   "dyaw": 0.2
+  },
+  {
+   "mass": 0.09,
+   "vmax": 8.8,
+   "v_over": 2.5,
+   "a_coast": 2.5,
+   "tag": "h_vo2.5_ac2.5_p2",
+   "dy": -0.1,
+   "dyaw": -0.2
+  },
+  {
+   "mass": 0.09,
+   "vmax": 8.8,
+   "v_over": 2.5,
+   "a_coast": 4.0,
+   "tag": "h_vo2.5_ac4.0_p0",
+   "dy": 0.0,
+   "dyaw": 0.0
+  },
+  {
+   "mass": 0.09,
+   "vmax": 8.8,
+   "v_over": 2.5,
+   "a_coast": 4.0,
+   "tag": "h_vo2.5_ac4.0_p1",
+   "dy": 0.1,
+   "dyaw": 0.2
+  },
+  {
+   "mass": 0.09,
+   "vmax": 8.8,
+   "v_over": 2.5,
+   "a_coast": 4.0,
+   "tag": "h_vo2.5_ac4.0_p2",
+   "dy": -0.1,
+   "dyaw": -0.2
+  },
+  {
+   "mass": 0.09,
+   "vmax": 8.8,
+   "v_over": 2.8,
+   "a_coast": 2.5,
+   "tag": "h_vo2.8_ac2.5_p0",
+   "dy": 0.0,
+   "dyaw": 0.0
+  },
+  {
+   "mass": 0.09,
+   "vmax": 8.8,
+   "v_over": 2.8,
+   "a_coast": 2.5,
+   "tag": "h_vo2.8_ac2.5_p1",
+   "dy": 0.1,
+   "dyaw": 0.2
+  },
+  {
+   "mass": 0.09,
+   "vmax": 8.8,
+   "v_over": 2.8,
+   "a_coast": 2.5,
+   "tag": "h_vo2.8_ac2.5_p2",
+   "dy": -0.1,
+   "dyaw": -0.2
+  },
+  {
+   "mass": 0.09,
+   "vmax": 8.8,
+   "v_over": 2.8,
+   "a_coast": 4.0,
+   "tag": "h_vo2.8_ac4.0_p0",
+   "dy": 0.0,
+   "dyaw": 0.0
+  },
+  {
+   "mass": 0.09,
+   "vmax": 8.8,
+   "v_over": 2.8,
+   "a_coast": 4.0,
+   "tag": "h_vo2.8_ac4.0_p1",
+   "dy": 0.1,
+   "dyaw": 0.2
+  },
+  {
+   "mass": 0.09,
+   "vmax": 8.8,
+   "v_over": 2.8,
+   "a_coast": 4.0,
+   "tag": "h_vo2.8_ac4.0_p2",
+   "dy": -0.1,
+   "dyaw": -0.2
+  }
+ ]
+}

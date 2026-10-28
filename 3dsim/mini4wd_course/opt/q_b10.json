@@ -1,0 +1,127 @@
+{
+ "name": "b10_plan2",
+ "slow": 0.25,
+ "timeout": 12,
+ "trials": [
+  {
+   "mass": 0.09,
+   "vmax": 8.8,
+   "v_over": 2.85,
+   "v_bridge": 3.0,
+   "a_coast": 3.0,
+   "tag": "k_vo2.85_vb3.0_ac3.0_p0",
+   "dy": 0.0,
+   "dyaw": 0.0
+  },
+  {
+   "mass": 0.09,
+   "vmax": 8.8,
+   "v_over": 2.85,
+   "v_bridge": 3.0,
+   "a_coast": 3.0,
+   "tag": "k_vo2.85_vb3.0_ac3.0_p1",
+   "dy": 0.1,
+   "dyaw": 0.2
+  },
+  {
+   "mass": 0.09,
+   "vmax": 8.8,
+   "v_over": 2.85,
+   "v_bridge": 3.0,
+   "a_coast": 3.0,
+   "tag": "k_vo2.85_vb3.0_ac3.0_p2",
+   "dy": -0.1,
+   "dyaw": -0.2
+  },
+  {
+   "mass": 0.09,
+   "vmax": 8.8,
+   "v_over": 2.85,
+   "v_bridge": 3.0,
+   "a_coast": 4.5,
+   "tag": "k_vo2.85_vb3.0_ac4.5_p0",
+   "dy": 0.0,
+   "dyaw": 0.0
+  },
+  {
+   "mass": 0.09,
+   "vmax": 8.8,
+   "v_over": 2.85,
+   "v_bridge": 3.0,
+   "a_coast": 4.5,
+   "tag": "k_vo2.85_vb3.0_ac4.5_p1",
+   "dy": 0.1,
+   "dyaw": 0.2
+  },
+  {
+   "mass": 0.09,
+   "vmax": 8.8,
+   "v_over": 2.85,
+   "v_bridge": 3.0,
+   "a_coast": 4.5,
+   "tag": "k_vo2.85_vb3.0_ac4.5_p2",
+   "dy": -0.1,
+   "dyaw": -0.2
+  },
+  {
+   "mass": 0.09,
+   "vmax": 8.8,
+   "v_over": 2.7,
+   "v_bridge": 2.8,
+   "a_coast": 3.0,
+   "tag": "k_vo2.70_vb2.8_ac3.0_p0",
+   "dy": 0.0,
+   "dyaw": 0.0
+  },
+  {
+   "mass": 0.09,
+   "vmax": 8.8,
+   "v_over": 2.7,
+   "v_bridge": 2.8,
+   "a_coast": 3.0,
+   "tag": "k_vo2.70_vb2.8_ac3.0_p1",
+   "dy": 0.1,
+   "dyaw": 0.2
+  },
+  {
+   "mass": 0.09,
+   "vmax": 8.8,
+   "v_over": 2.7,
+   "v_bridge": 2.8,
+   "a_coast": 3.0,
+   "tag": "k_vo2.70_vb2.8_ac3.0_p2",
+   "dy": -0.1,
+   "dyaw": -0.2
+  },
+  {
+   "mass": 0.09,
+   "vmax": 8.8,
+   "v_over": 2.7,
+   "v_bridge": 2.8,
+   "a_coast": 4.5,
+   "tag": "k_vo2.70_vb2.8_ac4.5_p0",
+   "dy": 0.0,
+   "dyaw": 0.0
+  },
+  {
+   "mass": 0.09,
+   "vmax": 8.8,
+   "v_over": 2.7,
+   "v_bridge": 2.8,
+   "a_coast": 4.5,
+   "tag": "k_vo2.70_vb2.8_ac4.5_p1",
+   "dy": 0.1,
+   "dyaw": 0.2
+  },
+  {
+   "mass": 0.09,
+   "vmax": 8.8,
+   "v_over": 2.7,
+   "v_bridge": 2.8,
+   "a_coast": 4.5,
+   "tag": "k_vo2.70_vb2.8_ac4.5_p2",
+   "dy": -0.1,
+   "dyaw": -0.2
+  }
+ ]
+}

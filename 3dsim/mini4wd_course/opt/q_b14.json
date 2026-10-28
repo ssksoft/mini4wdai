@@ -1,0 +1,199 @@
+{
+ "name": "b14_valid",
+ "slow": 0.25,
+ "timeout": 12,
+ "trials": [
+  {
+   "mass": 0.09,
+   "vmax": 8.8,
+   "v_over": 2.7,
+   "v_bridge": 2.8,
+   "a_coast": 4.5,
+   "tag": "vA_q0",
+   "dy": 0.05,
+   "dyaw": 0.1
+  },
+  {
+   "mass": 0.09,
+   "vmax": 8.8,
+   "v_over": 2.7,
+   "v_bridge": 2.8,
+   "a_coast": 4.5,
+   "tag": "vA_q1",
+   "dy": -0.05,
+   "dyaw": -0.1
+  },
+  {
+   "mass": 0.09,
+   "vmax": 8.8,
+   "v_over": 2.7,
+   "v_bridge": 2.8,
+   "a_coast": 4.5,
+   "tag": "vA_q2",
+   "dy": 0.15,
+   "dyaw": -0.3
+  },
+  {
+   "mass": 0.09,
+   "vmax": 8.8,
+   "v_over": 2.7,
+   "v_bridge": 2.8,
+   "a_coast": 4.5,
+   "tag": "vA_q3",
+   "dy": -0.15,
+   "dyaw": 0.3
+  },
+  {
+   "mass": 0.09,
+   "vmax": 8.8,
+   "v_over": 2.7,
+   "v_bridge": 2.8,
+   "a_coast": 4.5,
+   "tag": "vA_q4",
+   "dy": 0.0,
+   "dyaw": 0.4
+  },
+  {
+   "mass": 0.09,
+   "vmax": 8.8,
+   "v_over": 2.7,
+   "v_bridge": 2.8,
+   "a_coast": 4.5,
+   "tag": "vA_q5",
+   "dy": 0.0,
+   "dyaw": -0.4
+  },
+  {
+   "mass": 0.09,
+   "vmax": 8.8,
+   "v_over": 2.7,
+   "v_bridge": 2.8,
+   "a_coast": 4.5,
+   "kp_bridge": 12,
+   "tag": "vB_q0",
+   "dy": 0.05,
+   "dyaw": 0.1
+  },
+  {
+   "mass": 0.09,
+   "vmax": 8.8,
+   "v_over": 2.7,
+   "v_bridge": 2.8,
+   "a_coast": 4.5,
+   "kp_bridge": 12,
+   "tag": "vB_q1",
+   "dy": -0.05,
+   "dyaw": -0.1
+  },
+  {
+   "mass": 0.09,
+   "vmax": 8.8,
+   "v_over": 2.7,
+   "v_bridge": 2.8,
+   "a_coast": 4.5,
+   "kp_bridge": 12,
+   "tag": "vB_q2",
+   "dy": 0.15,
+   "dyaw": -0.3
+  },
+  {
+   "mass": 0.09,
+   "vmax": 8.8,
+   "v_over": 2.7,
+   "v_bridge": 2.8,
+   "a_coast": 4.5,
+   "kp_bridge": 12,
+   "tag": "vB_q3",
+   "dy": -0.15,
+   "dyaw": 0.3
+  },
+  {
+   "mass": 0.09,
+   "vmax": 8.8,
+   "v_over": 2.7,
+   "v_bridge": 2.8,
+   "a_coast": 4.5,
+   "kp_bridge": 12,
+   "tag": "vB_q4",
+   "dy": 0.0,
+   "dyaw": 0.4
+  },
+  {
+   "mass": 0.09,
+   "vmax": 8.8,
+   "v_over": 2.7,
+   "v_bridge": 2.8,
+   "a_coast": 4.5,
+   "kp_bridge": 12,
+   "tag": "vB_q5",
+   "dy": 0.0,
+   "dyaw": -0.4
+  },
+  {
+   "mass": 0.09,
+   "vmax": 8.8,
+   "v_over": 2.7,
+   "v_bridge": 2.8,
+   "a_coast": 4.5,
+   "a_coast_late": 5.0,
+   "tag": "vC_q0",
+   "dy": 0.05,
+   "dyaw": 0.1
+  },
+  {
+   "mass": 0.09,
+   "vmax": 8.8,
+   "v_over": 2.7,
+   "v_bridge": 2.8,
+   "a_coast": 4.5,
+   "a_coast_late": 5.0,
+   "tag": "vC_q1",
+   "dy": -0.05,
+   "dyaw": -0.1
+  },
+  {
+   "mass": 0.09,
+   "vmax": 8.8,
+   "v_over": 2.7,
+   "v_bridge": 2.8,
+   "a_coast": 4.5,
+   "a_coast_late": 5.0,
+   "tag": "vC_q2",
+   "dy": 0.15,
+   "dyaw": -0.3
+  },
+  {
+   "mass": 0.09,
+   "vmax": 8.8,
+   "v_over": 2.7,
+   "v_bridge": 2.8,
+   "a_coast": 4.5,
+   "a_coast_late": 5.0,
+   "tag": "vC_q3",
+   "dy": -0.15,
+   "dyaw": 0.3
+  },
+  {
+   "mass": 0.09,
+   "vmax": 8.8,
+   "v_over": 2.7,
+   "v_bridge": 2.8,
+   "a_coast": 4.5,
+   "a_coast_late": 5.0,
+   "tag": "vC_q4",
+   "dy": 0.0,
+   "dyaw": 0.4
+  },
+  {
+   "mass": 0.09,
+   "vmax": 8.8,
+   "v_over": 2.7,
+   "v_bridge": 2.8,
+   "a_coast": 4.5,
+   "a_coast_late": 5.0,
+   "tag": "vC_q5",
+   "dy": 0.0,
+   "dyaw": -0.4
+  }
+ ]
+}

@@ -1,0 +1,31 @@
+{
+ "name": "b06_s010",
+ "slow": 0.1,
+ "timeout": 12,
+ "trials": [
+  {
+   "tag": "nc_v2.80_s010",
+   "mass": 0.09,
+   "vmax": 2.8,
+   "trace": 1
+  },
+  {
+   "tag": "nc_v3.00_s010",
+   "mass": 0.09,
+   "vmax": 3.0,
+   "trace": 1
+  },
+  {
+   "tag": "nc_v3.25_s010",
+   "mass": 0.09,
+   "vmax": 3.25,
+   "trace": 1
+  },
+  {
+   "tag": "nc_v3.50_s010",
+   "mass": 0.09,
+   "vmax": 3.5,
+   "trace": 1
+  }
+ ]
+}

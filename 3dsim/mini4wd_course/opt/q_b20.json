@@ -1,0 +1,85 @@
+{
+ "name": "b20_finalC",
+ "slow": 0.25,
+ "timeout": 12,
+ "trials": [
+  {
+   "mass": 0.09,
+   "vmax": 8.8,
+   "v_over": 2.7,
+   "v_bridge": 2.8,
+   "kp_bridge": 8.0,
+   "a_coast": 4.5,
+   "a_coast_late": 5.0,
+   "tag": "FC_p0",
+   "dy": 0.0,
+   "dyaw": 0.0,
+   "save_traj": 1
+  },
+  {
+   "mass": 0.09,
+   "vmax": 8.8,
+   "v_over": 2.7,
+   "v_bridge": 2.8,
+   "kp_bridge": 8.0,
+   "a_coast": 4.5,
+   "a_coast_late": 5.0,
+   "tag": "FC_p1",
+   "dy": 0.1,
+   "dyaw": 0.2,
+   "save_traj": 1
+  },
+  {
+   "mass": 0.09,
+   "vmax": 8.8,
+   "v_over": 2.7,
+   "v_bridge": 2.8,
+   "kp_bridge": 8.0,
+   "a_coast": 4.5,
+   "a_coast_late": 5.0,
+   "tag": "FC_p2",
+   "dy": -0.1,
+   "dyaw": -0.2,
+   "save_traj": 1
+  },
+  {
+   "mass": 0.09,
+   "vmax": 8.8,
+   "v_over": 2.7,
+   "v_bridge": 2.8,
+   "kp_bridge": 8.0,
+   "a_coast": 4.5,
+   "a_coast_late": 5.0,
+   "tag": "FC_p3",
+   "dy": 0.05,
+   "dyaw": 0.1,
+   "save_traj": 1
+  },
+  {
+   "mass": 0.09,
+   "vmax": 8.8,
+   "v_over": 2.7,
+   "v_bridge": 2.8,
+   "kp_bridge": 8.0,
+   "a_coast": 4.5,
+   "a_coast_late": 5.0,
+   "tag": "FC_p4",
+   "dy": -0.05,
+   "dyaw": -0.1,
+   "save_traj": 1
+  },
+  {
+   "mass": 0.09,
+   "vmax": 8.8,
+   "v_over": 2.7,
+   "v_bridge": 2.8,
+   "kp_bridge": 8.0,
+   "a_coast": 4.5,
+   "a_coast_late": 5.0,
+   "tag": "FC_p5",
+   "dy": 0.15,
+   "dyaw": -0.3,
+   "save_traj": 1
+  }
+ ]
+}

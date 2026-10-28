@@ -1,0 +1,8 @@
+{
+ "name": "video_final",
+ "replay": "traj_FC_p0.json",
+ "record": true,
+ "fps": 30,
+ "rec_slow": 0.5,
+ "max_seconds": 12
+}

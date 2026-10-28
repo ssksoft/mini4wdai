@@ -1,0 +1,27 @@
+{
+ "name": "b16_fine",
+ "slow": 0.1,
+ "timeout": 12,
+ "trials": [
+  {
+   "mass": 0.09,
+   "vmax": 8.8,
+   "v_over": 2.7,
+   "v_bridge": 2.8,
+   "a_coast": 4.5,
+   "a_coast_late": 5.25,
+   "tag": "vE_fine_p0"
+  },
+  {
+   "mass": 0.09,
+   "vmax": 8.8,
+   "v_over": 2.7,
+   "v_bridge": 2.8,
+   "a_coast": 4.5,
+   "a_coast_late": 5.25,
+   "tag": "vE_fine_p1",
+   "dy": 0.1,
+   "dyaw": 0.2
+  }
+ ]
+}

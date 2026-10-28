@@ -1,0 +1,61 @@
+{
+ "name": "b05_slow025",
+ "slow": 0.25,
+ "timeout": 12,
+ "trials": [
+  {
+   "tag": "e_s025_r0",
+   "mass": 0.09,
+   "vmax": 8.8,
+   "v_over": 2.75,
+   "phi_pre": 60,
+   "phi_pre_late": 250,
+   "trace": 1
+  },
+  {
+   "tag": "e_s025_r1",
+   "mass": 0.09,
+   "vmax": 8.8,
+   "v_over": 2.75,
+   "phi_pre": 60,
+   "phi_pre_late": 250,
+   "trace": 1
+  },
+  {
+   "tag": "e_s025_r2",
+   "mass": 0.09,
+   "vmax": 8.8,
+   "v_over": 2.75,
+   "phi_pre": 60,
+   "phi_pre_late": 250,
+   "trace": 1
+  },
+  {
+   "tag": "e_s025_r3",
+   "mass": 0.09,
+   "vmax": 8.8,
+   "v_over": 2.75,
+   "phi_pre": 60,
+   "phi_pre_late": 250,
+   "trace": 1
+  },
+  {
+   "tag": "e_s025_r4",
+   "mass": 0.09,
+   "vmax": 8.8,
+   "v_over": 2.75,
+   "phi_pre": 60,
+   "phi_pre_late": 250,
+   "trace": 1
+  },
+  {
+   "tag": "e_s025_r5",
+   "mass": 0.09,
+   "vmax": 8.8,
+   "v_over": 2.75,
+   "phi_pre": 60,
+   "phi_pre_late": 250,
+   "trace": 1
+  }
+ ]
+}

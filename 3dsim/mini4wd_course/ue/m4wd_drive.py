@@ -20,8 +20,10 @@ Scenario keys: R restart scenario  N next phase  C camera  T slow motion on/off
 """
 import math
 import os
+import json
 import builtins
 import unreal
+import m4wd_ctrl as CTRL
 
 # ---------------------------------------------------------------- parameters (UE units: cm, s, kg)
 # Motor model: a = A0 * (1 - v/VMAX) while the tyres touch the track (linear torque-speed curve).
@@ -142,6 +144,202 @@ def _dilate(v):
     if abs(S.get("dilation", 1.0) - v) > 1e-3:
         unreal.GameplayStatics.set_global_time_dilation(S["world"], v)
         S["dilation"] = v
+
+
+# ---------------------------------------------------------------- lap-time optimisation trials
+# Physical motor model used in the trials (Mach-Dash Motor PRO through the gear train):
+#   F = F0 * max(0, duty - v / VMAX)        (PWM on a low-side switch: no brake, no reverse; coasts when F = 0)
+#   F0 * VMAX = MOTOR_K  (same motor: changing the gear ratio trades top speed for pulling force)
+#   a = min(F / m, MU_TIRE * g)             (4WD traction limit)
+# MOTOR_K comes from the Mach-Dash calibration against the real video: 13.0 m/s^2 * 0.1259 kg * 7.0 m/s.
+MOTOR_K = 13.0 * 0.1259 * 7.0           # [N m/s]
+OPT = None
+OPT_LAPS = 3
+
+
+def start_trials(trials, results_path=None, slow=1.0, timeout=12.0, record=False):
+    """trials: list of dicts {mass, vmax, <controller params>, trace(optional)}; call before Play."""
+    global OPT
+    base = os.path.join(unreal.Paths.convert_relative_path_to_full(unreal.Paths.project_saved_dir()), "Opt")
+    os.makedirs(base, exist_ok=True)
+    OPT = dict(queue=list(trials), n_total=len(trials), done=0, path=results_path or os.path.join(base, "results.csv"),
+               base=base, slow=float(slow), timeout=float(timeout), record=record, cur=None, state="run", ended_at=None)
+    if not os.path.exists(OPT["path"]):
+        with open(OPT["path"], "w", encoding="utf-8") as fh:
+            fh.write("tag,outcome,total_s,lap1,lap2,lap3,mass_kg,vmax_mps,f0_N,vpeak_mps,vlc_over_mps,zmax_cm,params\n")
+    unreal.log("[M4WD] %d trials queued -> %s" % (len(trials), OPT["path"]))
+
+
+def _opt_begin(world, now):
+    tr = OPT["queue"].pop(0)
+    m = float(tr.get("mass", 0.1259)); vmax = float(tr.get("vmax", 7.0))
+    S["comp"].set_mass_override_in_kg("None", m, True)
+    S["mass"] = max(0.01, S["comp"].get_mass())
+    _reset(0)
+    dy, dyaw = float(tr.get("dy", 0.0)), float(tr.get("dyaw", 0.0))   # start perturbation (cm, deg) for robustness checks
+    if dy or dyaw:
+        car = S["car"]
+        loc0 = car.get_actor_location(); rot0 = car.get_actor_rotation(); rv = car.get_actor_right_vector()
+        car.set_actor_location_and_rotation(loc0 + rv * dy, unreal.Rotator(roll=rot0.roll, pitch=rot0.pitch, yaw=rot0.yaw + dyaw), False, True)
+    S["t_lap"] = now
+    S["motor"] = 1
+    if not REC:
+        unreal.GameplayStatics.set_global_time_dilation(world, float(tr.get("slow", OPT["slow"])))   # per-trial time step
+    OPT["cur"] = dict(tr=tr, m=m, vmax=vmax, f0=MOTOR_K / vmax, t0=now, ctrl=None, vpeak=0.0, zmax=0.0,
+                      vlc=0.0, slow_t=None, trace=[] if tr.get("trace") else None, outcome=None,
+                      traj=[] if tr.get("save_traj") else None)
+
+
+def _opt_update(world, now, loc, vel, f, r, u, offtrack, raw_dt):
+    """returns duty 0..1 for this tick"""
+    if OPT["state"] != "run":
+        return 0.0
+    cur = OPT["cur"]
+    if cur is None:
+        if not OPT["queue"]:
+            OPT["state"] = "done"
+            unreal.log("[M4WD] all trials done")
+            if not REC:
+                unreal.GameplayStatics.set_global_time_dilation(world, 1.0)
+                unreal.get_editor_subsystem(unreal.LevelEditorSubsystem).editor_request_end_play()
+            return 0.0
+        _opt_begin(world, now)
+        return 0.0
+    if cur["outcome"] is not None:                     # finished trial shown in the video: hold for a moment
+        if _real_now() - cur["ended_real"] > 2.5:
+            OPT["cur"] = None
+            if REC and REC["state"] == "run":
+                REC["state"] = "finish"
+                OPT["state"] = "done"
+        return 0.0
+    if cur["ctrl"] is None:                            # one settle tick after the teleport
+        cur["ctrl"] = CTRL.Controller(cur["vmax"], cur["tr"])
+        cur["ctrl"].step(0.0, _rh_body(f, r, u), [vel[0] / 100, -vel[1] / 100, vel[2] / 100])
+        return 0.0
+    ctrl = cur["ctrl"]
+    v_rh = [vel[0] / 100, -vel[1] / 100, vel[2] / 100]
+    duty, _ = ctrl.step(raw_dt, _rh_body(f, r, u), v_rh)
+    spd = math.sqrt(_dot(vel, vel)) / 100
+    cur["vpeak"] = max(cur["vpeak"], spd)
+    cur["zmax"] = max(cur["zmax"], loc[2])
+    if ctrl.over(ctrl.n) and -5.0 < ctrl.rem <= 0.0:   # speed at the foot of the up-ramp (over crossings)
+        cur["vlc"] = max(cur["vlc"], spd)
+    t = now - cur["t0"]
+    if cur["trace"] is not None:
+        cur["trace"].append((t, duty, spd, ctrl.est.v, ctrl.est.psi, ctrl.est.pitch, int(ctrl.zone), loc[0] / 100, -loc[1] / 100, loc[2] / 100))
+    if cur["traj"] is not None:
+        rot = S["car"].get_actor_rotation()
+        cur["traj"].append([round(t, 5), round(loc[0], 3), round(loc[1], 3), round(loc[2], 3),
+                            round(rot.pitch, 3), round(rot.yaw, 3), round(rot.roll, 3),
+                            round(duty, 3), round(spd, 3), round(ctrl.est.v, 3), round(ctrl.est.psi, 1),
+                            len(S["laps"]), int(ctrl.zone), round(min(ctrl.v_lim, 99.0), 2)])
+    c, ext = S["course"][0], S["course"][1]
+    outside = abs(loc[0] - c[0]) > ext[0] + 8.0 or abs(loc[1] - c[1]) > ext[1] + 8.0
+    if spd < 0.05 and t > 1.0:
+        cur["slow_t"] = cur["slow_t"] or now
+    else:
+        cur["slow_t"] = None
+    outcome = None
+    if offtrack or outside:
+        outcome = "courseout"
+    elif len(S["laps"]) >= OPT_LAPS:
+        outcome = "ok"
+    elif t > OPT["timeout"]:
+        outcome = "timeout"
+    elif cur["slow_t"] is not None and now - cur["slow_t"] > 1.0:
+        outcome = "stuck"
+    if outcome:
+        _opt_finish(cur, outcome)
+        return 0.0
+    return duty
+
+
+def _rh_body(f, r, u):
+    return CTRL.body_matrix((f[0], -f[1], f[2]), (-r[0], r[1], -r[2]), (u[0], -u[1], u[2]))
+
+
+def _opt_finish(cur, outcome):
+    cur["outcome"] = outcome
+    cur["ended_real"] = _real_now()
+    laps = list(S["laps"])[:OPT_LAPS]
+    total = sum(laps) if (outcome == "ok" and len(laps) >= OPT_LAPS) else ""
+    tr = cur["tr"]
+    params = {k: v for k, v in tr.items() if k not in ("trace",)}
+    row = [tr.get("tag", ""), outcome, ("%.4f" % total) if total != "" else ""] + \
+          [("%.4f" % laps[i]) if i < len(laps) else "" for i in range(3)] + \
+          ["%.4f" % cur["m"], "%.3f" % cur["vmax"], "%.4f" % cur["f0"], "%.3f" % cur["vpeak"], "%.3f" % cur["vlc"],
+           "%.2f" % cur["zmax"], '"' + json.dumps(params).replace('"', "'") + '"']
+    with open(OPT["path"], "a", encoding="utf-8") as fh:
+        fh.write(",".join(str(x) for x in row) + "\n")
+    if cur["trace"] is not None:
+        tp = os.path.join(OPT["base"], "trace_%s.csv" % (tr.get("tag") or "trial"))
+        with open(tp, "w", encoding="utf-8") as fh:
+            fh.write("t_s,duty,v_true_mps,v_est_mps,psi_deg,pitch_deg,lc_zone,x_m,y_m,z_m\n")
+            for rr in cur["trace"]:
+                fh.write(",".join("%.5f" % x for x in rr) + "\n")
+    if cur["traj"] is not None:
+        with open(os.path.join(OPT["base"], "traj_%s.json" % (tr.get("tag") or "trial")), "w", encoding="utf-8") as fh:
+            json.dump(dict(params=params, outcome=outcome, laps=laps, mass=cur["m"], vmax=cur["vmax"],
+                           cols=["t", "x", "y", "z", "pitch", "yaw", "roll", "duty", "v", "v_est", "psi", "laps", "bridge", "v_lim"],
+                           rows=cur["traj"]), fh)
+    OPT["done"] += 1
+    txt = "試行 %s: %s  3周 %s s  ラップ %s" % (tr.get("tag", ""), {"ok": "完走", "courseout": "コースアウト", "timeout": "時間切れ", "stuck": "停止"}[outcome],
+                                     ("%.3f" % total) if total != "" else "-", " / ".join("%.3f" % x for x in laps))
+    S["opt_banner"] = (txt, (0.4, 1.0, 0.4) if outcome == "ok" else (1.0, 0.2, 0.1))
+    unreal.log("[M4WD] trial " + txt)
+    if not REC:
+        OPT["cur"] = None                              # next trial right away
+
+
+# ---------------------------------------------------------------- replay of a logged trial (for the video)
+# The validated run is logged pose-by-pose (2 ms steps); the video replays exactly that run, so the
+# frame-capture timing cannot change the physics outcome.
+REPLAY = None
+
+
+def start_replay(path, rate=1.0):
+    global REPLAY
+    d = json.load(open(path, encoding="utf-8"))
+    REPLAY = dict(data=d, t0=None, idx=0, state="run", end_real=None, rate=float(rate))
+    unreal.log("[M4WD] replay armed: %s (%d samples)" % (path, len(d["rows"])))
+
+
+def _replay_step(world, now):
+    R = REPLAY
+    d = R["data"]; rows = d["rows"]
+    car, comp = S["car"], S["comp"]
+    if R["t0"] is None:
+        comp.set_simulate_physics(False)
+        R["t0"] = now
+    t = (now - R["t0"]) * R["rate"]
+    while R["idx"] + 1 < len(rows) and rows[R["idx"] + 1][0] <= t:
+        R["idx"] += 1
+    r = rows[R["idx"]]
+    car.set_actor_location_and_rotation(_v(r[1], r[2], r[3]), unreal.Rotator(roll=r[6], pitch=r[4], yaw=r[5]), False, True)
+    loc = (r[1], r[2], r[3])
+    f = _t(car.get_actor_forward_vector())
+    _camera(loc, f, 1.0 / 60.0)
+    laps = d["laps"]; done = r[11]
+    t_start = sum(laps[:done])
+    cur_lap = t - t_start
+    finished = R["idx"] >= len(rows) - 1
+    best = min(laps[:done]) if done else None
+    slow_txt = ("   [スロー x%.2f]" % R["rate"]) if R["rate"] < 0.99 else ""
+    lines = ["ラップタイム最適化 結果%s  重量 %.0f g  最高速度 %.2f m/s  マッハダッシュモーターPRO + IMU速度制御" % (slow_txt, d["mass"] * 1000, d["vmax"]),
+             "デューティ %3.0f%%  推定速度(IMU) %.2f m/s  %s" % (r[7] * 100, r[9],
+                 "立体レーンチェンジ: 速度保持 %.2f m/s" % r[13] if r[12] else ("惰走で減速中 (上限 %.2f m/s)" % r[13] if r[7] < 0.99 and r[13] < 90 else "全開")),
+             "速度 %.2f m/s (%.1f km/h)" % (r[8], r[8] * 3.6),
+             "ラップ %d/3   現在 %.2f s   前回 %s   合計 %.3f s" % (done, cur_lap if not finished else 0.0,
+                 "%.3f s" % laps[done - 1] if done else "-", min(t, sum(laps)))]
+    _hud(world, "\n".join(lines), (1.0, 0.95, 0.3))
+    if finished:
+        _hud(world, "3周完走  合計 %.3f s  ( %s )  コースアウトなし" % (sum(laps), " / ".join("%.3f" % x for x in laps)), (0.4, 1.0, 0.4), key="M4WD_BANNER")
+        if R["end_real"] is None:
+            R["end_real"] = _real_now()
+        elif _real_now() - R["end_real"] > 3.0 and R["state"] == "run":
+            R["state"] = "done"
+            if REC and REC["state"] == "run":
+                REC["state"] = "finish"
 
 
 # ---------------------------------------------------------------- video recording
@@ -420,6 +618,12 @@ def _step(_slate_dt):
         return
     raw_dt = dt
     dt = min(max(dt, 1.0 / 1000.0), 1.0 / 20.0)
+    if REPLAY is not None and S.get("scenario"):
+        if REPLAY["state"] == "run" or (REC is not None and REC["state"] in ("run", "finish")):
+            _replay_step(world, unreal.GameplayStatics.get_time_seconds(world))
+            if REC is not None and REC["state"] in ("run", "finish"):
+                _rec_tick(world, raw_dt)
+            return
 
     loc = _t(car.get_actor_location())
     f = _t(car.get_actor_forward_vector())
@@ -450,7 +654,10 @@ def _step(_slate_dt):
             _scn_start_phase(0)
         if _edge(pc, "N"):
             _scn_start_phase(1 if S["phase"] == 0 else 0)
-        throttle = _scn_update(offtrack)
+        if OPT is not None and OPT["state"] == "run":
+            throttle = _opt_update(world, now, loc, vel, f, r, u, offtrack, raw_dt)
+        else:
+            throttle = _scn_update(offtrack)
         brake = False
     else:
         throttle = _down(pc, "W") or _down(pc, "Up")
@@ -478,7 +685,16 @@ def _step(_slate_dt):
 
     if grounded:
         name, vmax, a0 = MOTORS[S["motor"]][:3]
-        if throttle and not brake:
+        if OPT is not None and OPT["state"] == "run" and S["scenario"]:
+            cur = OPT["cur"]
+            F = 0.0
+            if cur is not None and throttle > 0.0:
+                F = cur["f0"] * max(0.0, float(throttle) - max(vf, 0.0) / 100.0 / cur["vmax"])   # N
+            if F > 0.0:
+                a = min(F / S["mass"] * 100.0, MU_TIRE * G)  # cm/s^2, traction limit (4WD)
+            else:
+                a = -ROLL_DECEL * vf                       # free-wheeling (low-side PWM switch: no brake)
+        elif throttle and not brake:
             a = a0 * max(0.0, 1.0 - max(vf, 0.0) / vmax)
             a = min(a, MU_TIRE * G)                       # traction limit (4WD)
         elif brake:
@@ -532,7 +748,18 @@ def _step(_slate_dt):
     spd_txt = "速度 %.2f m/s (%.1f km/h)   最高 %.2f m/s   %s%s" % (
         spd / 100.0, spd * 0.036, S["vmax_seen"] / 100.0, "" if grounded else "（浮いている）",
         "   [スロー x%.1f]" % S["dilation"] if S["dilation"] < 0.99 else "")
-    if S["scenario"]:
+    if S["scenario"] and OPT is not None and OPT["cur"] is not None and OPT["cur"]["ctrl"] is not None:
+        cur = OPT["cur"]; ctrl = cur["ctrl"]
+        lines = ["ラップタイム最適化  試行 %s (%d/%d)  重量 %.0f g  最高速度 %.2f m/s  マッハダッシュPRO" % (
+                     cur["tr"].get("tag", ""), OPT["done"] + 1, OPT["n_total"], cur["m"] * 1000, cur["vmax"]),
+                 "IMU速度制御: デューティ %3.0f%%  推定速度 %.2f m/s  方位 %.0f°  %s" % (
+                     ctrl.duty * 100, ctrl.est.v, ctrl.est.psi,
+                     ("レーンチェンジ区間(%s)" % ("立体の上" if ctrl.over(ctrl.n) else "下")) if ctrl.zone else ""),
+                 spd_txt, laps_txt]
+        _hud(world, "\n".join(lines), (1.0, 0.95, 0.3))
+        if S.get("opt_banner") and cur["outcome"] is not None:
+            _hud(world, S["opt_banner"][0], S["opt_banner"][1], key="M4WD_BANNER")
+    elif S["scenario"]:
         lines = ["再現シナリオ  %d/2  %s  デューティ100%%（フルスロットル）" % (S["phase"] + 1, name),
                  MOTORS[S["motor"]][3] + "   [R]最初から [N]次へ [C]カメラ [T]スロー",
                  spd_txt, laps_txt]

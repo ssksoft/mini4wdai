@@ -1,0 +1,25 @@
+{
+ "name": "b09_trace",
+ "slow": 0.25,
+ "timeout": 12,
+ "trials": [
+  {
+   "tag": "tr_vo2.8_ac2.5",
+   "mass": 0.09,
+   "vmax": 8.8,
+   "v_over": 2.8,
+   "a_coast": 2.5,
+   "trace": 1
+  },
+  {
+   "tag": "tr_vo2.8_ac4.0_p1",
+   "mass": 0.09,
+   "vmax": 8.8,
+   "v_over": 2.8,
+   "a_coast": 4.0,
+   "dy": 0.1,
+   "dyaw": 0.2,
+   "trace": 1
+  }
+ ]
+}

@@ -1,0 +1,148 @@
+{
+ "name": "b18_emu",
+ "slow": 0.25,
+ "timeout": 12,
+ "trials": [
+  {
+   "mass": 0.09,
+   "vmax": 8.8,
+   "v_bridge": 3.0,
+   "kp_bridge": 7.6,
+   "emu_from": 90,
+   "a_coast": 4.0,
+   "a_coast_late": 4.0,
+   "tag": "G90_a4_p0",
+   "dy": 0.0,
+   "dyaw": 0.0
+  },
+  {
+   "mass": 0.09,
+   "vmax": 8.8,
+   "v_bridge": 3.0,
+   "kp_bridge": 7.6,
+   "emu_from": 90,
+   "a_coast": 4.0,
+   "a_coast_late": 4.0,
+   "tag": "G90_a4_p1",
+   "dy": 0.1,
+   "dyaw": 0.2
+  },
+  {
+   "mass": 0.09,
+   "vmax": 8.8,
+   "v_bridge": 3.0,
+   "kp_bridge": 7.6,
+   "emu_from": 90,
+   "a_coast": 4.0,
+   "a_coast_late": 4.0,
+   "tag": "G90_a4_p2",
+   "dy": -0.1,
+   "dyaw": -0.2
+  },
+  {
+   "mass": 0.09,
+   "vmax": 8.8,
+   "v_bridge": 3.0,
+   "kp_bridge": 7.6,
+   "emu_from": 90,
+   "a_coast": 4.0,
+   "a_coast_late": 4.0,
+   "tag": "G90_a4_fine",
+   "slow": 0.1
+  },
+  {
+   "mass": 0.09,
+   "vmax": 8.8,
+   "v_bridge": 3.0,
+   "kp_bridge": 7.6,
+   "emu_from": 45,
+   "a_coast": 4.0,
+   "a_coast_late": 4.0,
+   "tag": "G45_a4_p0",
+   "dy": 0.0,
+   "dyaw": 0.0
+  },
+  {
+   "mass": 0.09,
+   "vmax": 8.8,
+   "v_bridge": 3.0,
+   "kp_bridge": 7.6,
+   "emu_from": 45,
+   "a_coast": 4.0,
+   "a_coast_late": 4.0,
+   "tag": "G45_a4_p1",
+   "dy": 0.1,
+   "dyaw": 0.2
+  },
+  {
+   "mass": 0.09,
+   "vmax": 8.8,
+   "v_bridge": 3.0,
+   "kp_bridge": 7.6,
+   "emu_from": 45,
+   "a_coast": 4.0,
+   "a_coast_late": 4.0,
+   "tag": "G45_a4_p2",
+   "dy": -0.1,
+   "dyaw": -0.2
+  },
+  {
+   "mass": 0.09,
+   "vmax": 8.8,
+   "v_bridge": 3.0,
+   "kp_bridge": 7.6,
+   "emu_from": 45,
+   "a_coast": 4.0,
+   "a_coast_late": 4.0,
+   "tag": "G45_a4_fine",
+   "slow": 0.1
+  },
+  {
+   "mass": 0.09,
+   "vmax": 8.8,
+   "v_bridge": 3.0,
+   "kp_bridge": 7.6,
+   "emu_from": 135,
+   "a_coast": 4.0,
+   "a_coast_late": 4.0,
+   "tag": "G135_a4_p0",
+   "dy": 0.0,
+   "dyaw": 0.0
+  },
+  {
+   "mass": 0.09,
+   "vmax": 8.8,
+   "v_bridge": 3.0,
+   "kp_bridge": 7.6,
+   "emu_from": 135,
+   "a_coast": 4.0,
+   "a_coast_late": 4.0,
+   "tag": "G135_a4_p1",
+   "dy": 0.1,
+   "dyaw": 0.2
+  },
+  {
+   "mass": 0.09,
+   "vmax": 8.8,
+   "v_bridge": 3.0,
+   "kp_bridge": 7.6,
+   "emu_from": 135,
+   "a_coast": 4.0,
+   "a_coast_late": 4.0,
+   "tag": "G135_a4_p2",
+   "dy": -0.1,
+   "dyaw": -0.2
+  },
+  {
+   "mass": 0.09,
+   "vmax": 8.8,
+   "v_bridge": 3.0,
+   "kp_bridge": 7.6,
+   "emu_from": 135,
+   "a_coast": 4.0,
+   "a_coast_late": 4.0,
+   "tag": "G135_a4_fine",
+   "slow": 0.1
+  }
+ ]
+}

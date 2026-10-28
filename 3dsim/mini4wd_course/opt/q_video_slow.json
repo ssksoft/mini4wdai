@@ -1,0 +1,9 @@
+{
+ "name": "video_slow",
+ "replay": "traj_FC_p0.json",
+ "rate": 0.5,
+ "record": true,
+ "fps": 30,
+ "rec_slow": 0.5,
+ "max_seconds": 14
+}

@@ -136,6 +136,9 @@ def _dilate(v):
     if REC is not None and REC["state"] == "run":
         S["dilation"] = v
         return
+    if IMU is not None and IMU["state"] == "run":
+        S["dilation"] = v
+        return
     if abs(S.get("dilation", 1.0) - v) > 1e-3:
         unreal.GameplayStatics.set_global_time_dilation(S["world"], v)
         S["dilation"] = v
@@ -171,6 +174,54 @@ def start_recording(fps=30, slow=0.2, max_seconds=90.0):
     REC = dict(dir=d, fps=float(fps), slow=float(slow), max=float(max_seconds), t=0.0, k=0, next=0.0,
                state="run", saw_mach=False, act=None)
     unreal.log("[M4WD] recording armed: %s" % d)
+
+
+# ---------------------------------------------------------------- IMU log (state of the car body every tick)
+# The game runs slowed down (IMU["slow"]) so the physics ticks are short (~4 ms of game time);
+# accelerometer / gyro values are derived from this log offline (see generator/imu_from_log.py).
+IMU = None
+
+
+def start_imu_log(slow=0.25, phase=0, path=None):
+    """call from the editor, then start Play. Logs the scenario phase `phase` (0 = standard motor) and stops Play."""
+    global IMU
+    if path is None:
+        path = os.path.join(unreal.Paths.convert_relative_path_to_full(unreal.Paths.project_saved_dir()), "IMU", "imu_raw_log.csv")
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    IMU = dict(path=path, slow=float(slow), phase=phase, state="run", rows=[], act=None, t0=None)
+    unreal.log("[M4WD] IMU log armed: %s" % path)
+
+
+def _imu_tick(world, now, loc, vel, f, r, u, grounded, throttle):
+    want = IMU["slow"] * S.get("dilation", 1.0)
+    if IMU["act"] is None or abs(IMU["act"] - want) > 1e-6:
+        unreal.GameplayStatics.set_global_time_dilation(world, want)
+        IMU["act"] = want
+    if S.get("phase") != IMU["phase"]:
+        return
+    if S.get("phase_end") is not None:              # phase finished (all laps or course-out): write and stop
+        IMU["state"] = "done"
+        unreal.GameplayStatics.set_global_time_dilation(world, 1.0)
+        cols = ["t_s", "x_m", "y_m", "z_m", "vx_mps", "vy_mps", "vz_mps",
+                "fx", "fy", "fz", "lx", "ly", "lz", "ux", "uy", "uz", "grounded", "throttle", "laps"]
+        with open(IMU["path"], "w", encoding="utf-8") as fh:
+            fh.write("# UE world converted to right-handed (x fwd-of-world, y = -UE y, z up); body axes f=forward l=left u=up\n")
+            fh.write("# motor=%s  laps=%s  result=%s\n" % (MOTORS[S["motor"]][0], ["%.3f" % x for x in S["laps"]], S["phase_end"][1]))
+            fh.write(",".join(cols) + "\n")
+            for row in IMU["rows"]:
+                fh.write(",".join("%.6f" % v if isinstance(v, float) else str(v) for v in row) + "\n")
+        unreal.log("[M4WD] IMU log done: %d samples, laps %s -> %s" % (len(IMU["rows"]), S["laps"], IMU["path"]))
+        unreal.get_editor_subsystem(unreal.LevelEditorSubsystem).editor_request_end_play()
+        return
+    if IMU["t0"] is None:
+        IMU["t0"] = now
+    # right-handed conversion: flip UE y
+    rh = lambda v: (v[0], -v[1], v[2])
+    p, v_, fw, up = rh(loc), rh(vel), rh(f), rh(u)
+    lf = (-r[0], r[1], -r[2])                       # left = -right, then y flipped
+    IMU["rows"].append((now - IMU["t0"], p[0] / 100, p[1] / 100, p[2] / 100, v_[0] / 100, v_[1] / 100, v_[2] / 100,
+                        fw[0], fw[1], fw[2], lf[0], lf[1], lf[2], up[0], up[1], up[2],
+                        1 if grounded else 0, 1 if throttle else 0, len(S["laps"])))
 
 
 def _rec_set(world, v):
@@ -465,6 +516,8 @@ def _step(_slate_dt):
         S["s_prev"] = s
 
     _camera(loc, f, dt)
+    if IMU is not None and IMU["state"] == "run" and S["scenario"]:
+        _imu_tick(world, now, loc, vel, f, r, u, grounded, throttle)
     if REC is not None and REC["state"] in ("run", "finish"):
         _rec_tick(world, raw_dt)
 

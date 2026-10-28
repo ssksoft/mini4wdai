@@ -1,0 +1,132 @@
+{
+  "Straight": {
+    "scan": "0f355a50",
+    "scale": 1.0,
+    "yaw_deg": -149.19,
+    "offset_mm": [
+      269.9,
+      -10.2
+    ],
+    "z_shift_mm": 0.0,
+    "boundary_rms_mm": 2.01,
+    "faces": 36760,
+    "texture": [
+      4096,
+      1660
+    ]
+  },
+  "Curve45_Blue": {
+    "scan": "2ac27cb1",
+    "scale": 1.0,
+    "yaw_deg": 70.81,
+    "offset_mm": [
+      171.7,
+      39.1
+    ],
+    "z_shift_mm": 0.0,
+    "boundary_rms_mm": 1.57,
+    "faces": 36622,
+    "texture": [
+      4096,
+      1265
+    ]
+  },
+  "Curve45R_Blue": {
+    "scan": "2ac27cb1",
+    "scale": 1.0,
+    "yaw_deg": 70.81,
+    "offset_mm": [
+      171.7,
+      39.1
+    ],
+    "z_shift_mm": 0.0,
+    "boundary_rms_mm": 1.57,
+    "faces": 36622,
+    "texture": [
+      4096,
+      1265
+    ],
+    "note": "Curve45_L scan re-posed for right-hand use"
+  },
+  "Curve45_Green": {
+    "scan": "6968db46",
+    "scale": 1.0,
+    "yaw_deg": 70.45,
+    "offset_mm": [
+      93.3,
+      47.6
+    ],
+    "z_shift_mm": 0.0,
+    "boundary_rms_mm": 1.62,
+    "faces": 33829,
+    "texture": [
+      4096,
+      1420
+    ]
+  },
+  "Curve45R_Green": {
+    "scan": "6968db46",
+    "scale": 1.0,
+    "yaw_deg": 70.45,
+    "offset_mm": [
+      93.3,
+      47.6
+    ],
+    "z_shift_mm": 0.0,
+    "boundary_rms_mm": 1.62,
+    "faces": 33829,
+    "texture": [
+      4096,
+      1420
+    ],
+    "note": "Curve45_L scan re-posed for right-hand use"
+  },
+  "LaneChange_Base_A": {
+    "scan": "1f147f5d",
+    "scale": 1.0,
+    "yaw_deg": -152.89,
+    "offset_mm": [
+      189.9,
+      -61.6
+    ],
+    "z_shift_mm": 0.0,
+    "boundary_rms_mm": 3.99,
+    "faces": 39937,
+    "texture": [
+      4095,
+      1715
+    ]
+  },
+  "LaneChange_Base_B": {
+    "scan": "90745ad7",
+    "scale": 1.0,
+    "yaw_deg": -150.05,
+    "offset_mm": [
+      211.7,
+      -16.3
+    ],
+    "z_shift_mm": 0.0,
+    "boundary_rms_mm": 3.84,
+    "faces": 44856,
+    "texture": [
+      4095,
+      1597
+    ]
+  },
+  "LaneChange_Bridge": {
+    "scan": "6a42af1d",
+    "scale": 1.0,
+    "yaw_deg": -122.92,
+    "offset_mm": [
+      238.0,
+      23.6
+    ],
+    "z_shift_mm": -18.6,
+    "boundary_rms_mm": 3.35,
+    "faces": 27796,
+    "texture": [
+      4095,
+      1424
+    ]
+  }
+}

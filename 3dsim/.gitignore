@@ -1,0 +1,19 @@
+# --- Unreal Engine: generated / per-machine folders (rebuilt automatically) ---
+MiniYonkuSim/Binaries/
+MiniYonkuSim/Build/
+MiniYonkuSim/DerivedDataCache/
+MiniYonkuSim/Intermediate/
+MiniYonkuSim/Saved/
+MiniYonkuSim/.vs/
+MiniYonkuSim/*.sln
+MiniYonkuSim/*.VC.db
+# per-user content folders
+MiniYonkuSim/Content/Developers/
+MiniYonkuSim/Content/Collections/
+
+# --- Python ---
+__pycache__/
+*.pyc
+
+# --- backups ---
+*.bak*

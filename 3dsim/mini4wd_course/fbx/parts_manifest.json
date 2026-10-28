@@ -1,0 +1,128 @@
+{
+  "units": "Unreal: cm, X forward, Y right, Z up. yaw + = turn right",
+  "parts": {
+    "Straight": {
+      "file": "SM_Straight.fbx",
+      "sockets_ue": {
+        "In": {
+          "location_cm": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "yaw_deg": -0.0
+        },
+        "Out": {
+          "location_cm": [
+            46.5,
+            0.0,
+            0.0
+          ],
+          "yaw_deg": -0.0
+        }
+      },
+      "triangles": 48,
+      "collision_hulls": 4
+    },
+    "Curve45_L": {
+      "file": "SM_Curve45_L.fbx",
+      "sockets_ue": {
+        "In": {
+          "location_cm": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "yaw_deg": -0.0
+        },
+        "Out": {
+          "location_cm": [
+            35.1432,
+            -14.5568,
+            0.0
+          ],
+          "yaw_deg": -45.0
+        }
+      },
+      "triangles": 784,
+      "collision_hulls": 48
+    },
+    "Curve45_R": {
+      "file": "SM_Curve45_R.fbx",
+      "sockets_ue": {
+        "In": {
+          "location_cm": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "yaw_deg": -0.0
+        },
+        "Out": {
+          "location_cm": [
+            35.1432,
+            14.5568,
+            0.0
+          ],
+          "yaw_deg": 45.0
+        }
+      },
+      "triangles": 784,
+      "collision_hulls": 48
+    },
+    "LaneChange_Base": {
+      "file": "SM_LaneChange_Base.fbx",
+      "sockets_ue": {
+        "In": {
+          "location_cm": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "yaw_deg": -0.0
+        },
+        "Out": {
+          "location_cm": [
+            46.5,
+            0.0,
+            0.0
+          ],
+          "yaw_deg": -0.0
+        },
+        "BridgeMount": {
+          "location_cm": [
+            24.5,
+            5.85,
+            6.6
+          ],
+          "yaw_deg": -0.0
+        }
+      },
+      "triangles": 616,
+      "collision_hulls": 40
+    },
+    "LaneChange_Bridge": {
+      "file": "SM_LaneChange_Bridge.fbx",
+      "sockets_ue": {
+        "In": {
+          "location_cm": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "yaw_deg": -0.0
+        },
+        "Out": {
+          "location_cm": [
+            44.0,
+            -11.7,
+            0.0
+          ],
+          "yaw_deg": -0.0
+        }
+      },
+      "triangles": 1424,
+      "collision_hulls": 88
+    }
+  }
+}

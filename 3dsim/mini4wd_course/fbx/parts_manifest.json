@@ -121,8 +121,8 @@
           "yaw_deg": -0.0
         }
       },
-      "triangles": 1424,
-      "collision_hulls": 88
+      "triangles": 1068,
+      "collision_hulls": 66
     }
   }
 }

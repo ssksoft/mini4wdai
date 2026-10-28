@@ -102,31 +102,31 @@ def tagged(actor, tag, label, folder="Mini4WD_Car"):
     return actor
 
 
-def main():
-    if unreal.EditorAssetLibrary.does_asset_exist(MAP):
-        les.load_level(MAP)
-    clear_old()                      # remove the old car first: never re-import a mesh that is placed in the level
-    pm = physical_material()
-    mesh = import_car(pm)
-    gm = game_mode()
-
-    piece = find_label(START_PIECE)
+def place_car(start_piece=START_PIECE, lanes=((+1, "Outer"), (-1, "Inner")), start_offset=8.0,
+              finish_offset=0.0, folder="Mini4WD_Car", pm=None, mesh=None, gm=None):
+    """Spawn start points, finish line, car, camera in the CURRENT level (course must be built).
+    lanes: list of (side, name); side +1 = right lane of the start piece, -1 = left lane."""
+    pm = pm or physical_material()
+    mesh = mesh or unreal.EditorAssetLibrary.load_asset(CAR_DIR + "/SM_M4WD_MadRacer")
+    gm = gm or game_mode()
+    piece = find_label(start_piece)
     if piece is None:
-        raise RuntimeError("course piece %s not found - run setup_in_ue.py first" % START_PIECE)
+        raise RuntimeError("course piece %s not found - build the course first" % start_piece)
     p0 = piece.get_actor_location(); rot = piece.get_actor_rotation()
     fwd = piece.get_actor_forward_vector(); right = piece.get_actor_right_vector()
     starts = []
-    for i, side in enumerate((+1, -1)):   # 0 = right lane (outer on this oval), 1 = left lane (inner)
-        p = p0 + fwd * 8.0 + right * (side * LANE_OFFSET)
+    for i, (side, lname) in enumerate(lanes):
+        p = p0 + fwd * start_offset + right * (side * LANE_OFFSET)
         p.z = FLOOR_TOP + 0.3
         tp = eas.spawn_actor_from_class(unreal.TargetPoint, p, rot)
-        tagged(tp, "M4WD_START_%d" % i, "M4WD_Start_%s" % ("Outer" if i == 0 else "Inner"))
+        tagged(tp, "M4WD_START_%d" % i, "M4WD_Start_%s" % lname, folder)
         starts.append(p)
-    fin = eas.spawn_actor_from_class(unreal.TargetPoint, unreal.Vector(p0.x, p0.y, FLOOR_TOP), rot)
-    tagged(fin, "M4WD_FINISH", "M4WD_FinishLine")
+    fp = p0 + fwd * finish_offset
+    fin = eas.spawn_actor_from_class(unreal.TargetPoint, unreal.Vector(fp.x, fp.y, FLOOR_TOP), rot)
+    tagged(fin, "M4WD_FINISH", "M4WD_FinishLine", folder)
 
     car = eas.spawn_actor_from_object(mesh, starts[0], rot)
-    tagged(car, "M4WD_CAR", "MadRacer")
+    tagged(car, "M4WD_CAR", "MadRacer", folder)
     comp = car.static_mesh_component
     comp.set_mobility(unreal.ComponentMobility.MOVABLE)
     comp.set_collision_profile_name("PhysicsActor")
@@ -141,7 +141,7 @@ def main():
     comp.set_editor_property("body_instance", bi)
 
     cam = eas.spawn_actor_from_class(unreal.CameraActor, starts[0] + unreal.Vector(-30, 0, 15), rot)
-    tagged(cam, "M4WD_CAM", "M4WD_ChaseCamera")
+    tagged(cam, "M4WD_CAM", "M4WD_Camera", folder)
     try:
         cc = cam.camera_component
         cc.set_editor_property("field_of_view", 70.0)
@@ -152,10 +152,12 @@ def main():
     world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_editor_world()
     ws = world.get_world_settings()
     _try(ws, ["default_game_mode"], gm)
-    les.save_current_level()
+    return car
 
-    # auto-start the keyboard runtime with every editor session of this project
-    # (init_unreal.py finds ../mini4wd_course/ue relative to the project, so the repo can live anywhere)
+
+def ensure_runtime():
+    """auto-start the drive runtime with every editor session of this project
+    (init_unreal.py finds ../mini4wd_course/ue relative to the project, so the repo can live anywhere)"""
     pydir = os.path.join(unreal.Paths.convert_relative_path_to_full(unreal.Paths.project_content_dir()), "Python")
     init_py = os.path.join(pydir, "init_unreal.py")
     if not os.path.exists(init_py):
@@ -165,6 +167,18 @@ def main():
     import importlib, m4wd_drive
     importlib.reload(m4wd_drive)
     m4wd_drive.register()
+
+
+def main():
+    if unreal.EditorAssetLibrary.does_asset_exist(MAP):
+        les.load_level(MAP)
+    clear_old()                      # remove the old car first: never re-import a mesh that is placed in the level
+    pm = physical_material()
+    mesh = import_car(pm)
+    gm = game_mode()
+    place_car(START_PIECE, pm=pm, mesh=mesh, gm=gm)
+    les.save_current_level()
+    ensure_runtime()
     unreal.log("[M4WD] car ready - press Play (Alt+P), then W to drive")
 
 

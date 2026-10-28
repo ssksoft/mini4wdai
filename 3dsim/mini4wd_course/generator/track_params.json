@@ -15,11 +15,12 @@
   "ramp_wall_top_at_end": 130.0,
   "bridge_hump": 15.0,
   "bridge_deck_thickness": 4.0,
-  "bridge_cover": true,
+  "bridge_cover": false,
   "bridge_cover_thickness": 2.0,
   "visual_segments_per_45deg": 24,
   "collision_segments_per_45deg": 12,
   "s_curve_visual_step": 10.0,
   "s_curve_collision_step": 20.0,
-  "collision_extra_thickness": 10.0
+  "collision_extra_thickness": 10.0,
+  "_comment_bridge_cover": "Real course (video 2026-10-28) is run WITHOUT the clear cover on the lane-change bridge"
 }
